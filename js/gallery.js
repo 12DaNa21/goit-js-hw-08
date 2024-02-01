@@ -68,17 +68,15 @@ const images = [
 const gallery = document.querySelector('.gallery');
 
 function createImagesMarkup({preview, original, description}) {
-  const markup = `<li class="gallery-item">
-                  <a class="gallery-link" href="${original}" onclick="return false;">
+  return `<li class="gallery-item">
+                  <a class="gallery-link" href="${original}">
                   <img class="gallery-image"
                   src="${preview}"
                   data-source="${original}"
                   alt="${description}"
                   />
                   </a>
-                  </li>`
-  
-  return markup;
+                  </li>`;
 }
 
 let markup = "";
@@ -87,29 +85,30 @@ for (let image of images) {
 }
 gallery.innerHTML = markup;
 
-const items = gallery.querySelectorAll('.gallery-image');
-items.forEach((item) => {
-  item.addEventListener('click', (event) => {
-    event.preventDefault();
-    const source = event.currentTarget.dataset.source;
-    let info = images.find(item => item.original === source);
+gallery.addEventListener('click', (event) => {
+  event.preventDefault();
+
+  const target = event.target;
+  if (target.classList.contains('gallery-image')) {
+    const source = target.dataset.source;
+    const info = images.find(item => item.original === source);
 
     if (info) {
       const modalContent = `<img src="${info.original}" alt="${info.description}" />`;
       const modalInstance = basicLightbox.create(modalContent);
-      modalInstance.show();
-  
+
       const closeOnEscape = (event) => {
         if (event.key === 'Escape') {
           modalInstance.close();
         }
       };
 
+      modalInstance.show();
       window.addEventListener('keydown', closeOnEscape);
 
-        modalInstance.element().addEventListener('click', () => {
+      modalInstance.on('close', () => {
         window.removeEventListener('keydown', closeOnEscape);
       });
     }
-  });
+  }
 });
