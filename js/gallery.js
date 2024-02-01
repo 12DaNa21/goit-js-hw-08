@@ -95,7 +95,6 @@ gallery.addEventListener('click', (event) => {
 
     if (info) {
       const modalContent = `<img src="${info.original}" alt="${info.description}" />`;
-      const modalInstance = basicLightbox.create(modalContent);
 
       const closeOnEscape = (event) => {
         if (event.key === 'Escape') {
@@ -103,12 +102,16 @@ gallery.addEventListener('click', (event) => {
         }
       };
 
-      modalInstance.show();
-      window.addEventListener('keydown', closeOnEscape);
-
-      modalInstance.on('close', () => {
-        window.removeEventListener('keydown', closeOnEscape);
+      const modalInstance = basicLightbox.create(modalContent, {
+        onShow: () => {
+          window.addEventListener('keydown', closeOnEscape);
+        },
+        onClose: () => {
+          window.removeEventListener('keydown', closeOnEscape);
+        },
       });
+
+      modalInstance.show();
     }
   }
 });
